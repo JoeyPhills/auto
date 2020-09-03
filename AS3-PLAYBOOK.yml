@@ -1,0 +1,32 @@
+---
+- name: DEPLOY-DECK
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    uri_method: POST
+  
+  vars_files:
+    - ../creds/big_creds.yml
+
+  tasks:
+
+  - name: Rest call BIG-IP
+    uri:
+      url: https://35.178.150.19/mgmt/shared/appsvcs/declare
+      user: "{{ bigip_user }}"
+      password: "{{ bigip_pass }}"
+      method: "{{ uri_method }}"
+      body: "{{ lookup('file','./AS3-DEC.json') }}"
+      force_basic_auth: yes
+      status_code: 200
+      body_format: json
+      validate_certs: no
+    register: AS3_output
+  
+  - name: DEBUG AS3
+    debug:
+      msg: "MY AS3 OUTPUT {{AS3_output}}"
+
+...
